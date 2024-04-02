@@ -19,6 +19,7 @@ package com.example.android.advancedcoroutines
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
@@ -69,10 +70,15 @@ class PlantListViewModel internal constructor(
             plantRepository.getPlantsWithGrowZone(growZone)
         }
     }
+    // add a new property to plantListViewModel
+    val plantsUsingFlow: LiveData<List<Plant>> = plantRepository.plantsFlow.asLiveData()
 
     init {
         // When creating a new ViewModel, clear the grow zone and perform any related udpates
         clearGrowZoneNumber()
+
+        // fetch the full plant list
+        launchDataLoad { plantRepository.tryUpdateRecentPlantsCache() }
     }
 
     /**
